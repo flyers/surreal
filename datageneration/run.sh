@@ -1,17 +1,17 @@
 #!/bin/bash
 
-JOB_PARAMS=${1:-'--idx 0 --ishape 0 --stride 50'} # defaults to [0, 0, 50]
+JOB_PARAMS=${1:-'--idx 2 --ishape 0 --stride 50'} # defaults to [0, 0, 50]
 
 # SET PATHS HERE
-FFMPEG_PATH=/home/gvarol/tools/ffmpeg/ffmpeg_build_sequoia_h264
-X264_PATH=/home/gvarol/tools/ffmpeg/x264_build/
-PYTHON2_PATH=/home/gvarol/tools/anaconda/envs/surreal_env/ # PYTHON 2
-BLENDER_PATH=/home/gvarol/tools/blender/blender-2.78a-linux-glibc211-x86_64
+FFMPEG_PATH=/home/sliay/dev/ffmpeg/ffmpeg_x264
+X264_PATH=/home/sliay/dev/ffmpeg/x264
+PYTHON2_PATH=/usr # PYTHON 2
+BLENDER_PATH=/home/sliay/dev/blender-2.78a-linux-glibc211-x86_64
 cd surreal/datageneration
 
 # BUNLED PYTHON
 BUNDLED_PYTHON=${BLENDER_PATH}/2.78/python
-export PYTHONPATH=${BUNDLED_PYTHON}/lib/python3.4:${BUNDLED_PYTHON}/lib/python3.4/site-packages
+export PYTHONPATH=${BUNDLED_PYTHON}/lib/python3.5:${BUNDLED_PYTHON}/lib/python3.5/site-packages
 export PYTHONPATH=${BUNDLED_PYTHON}:${PYTHONPATH}
 
 # FFMPEG
