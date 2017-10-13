@@ -475,7 +475,8 @@ def main():
     # check if already computed
     #  + clean up existing tmp folders if any
     if exists(tmp_path) and tmp_path != "" and tmp_path != "/":
-        os.system('rm -rf %s' % tmp_path)
+        # os.system('rm -rf %s' % tmp_path)
+        os.system('powershell Remove-Item -Recurse %s' % tmp_path)
     rgb_vid_filename = "%s_c%04d.mp4" % (join(output_path, name.replace(' ', '')), (ishape + 1))
     #if os.path.isfile(rgb_vid_filename):
     #    log_message("ALREADY COMPUTED - existing: %s" % rgb_vid_filename)
@@ -506,7 +507,8 @@ def main():
     if not exists(sh_dir):
         mkdir_safe(sh_dir)
     sh_dst = join(sh_dir, 'sh_%02d_%05d.osl' % (runpass, idx))
-    os.system('cp spher_harm/sh.osl %s' % sh_dst)
+    # os.system('cp spher_harm/sh.osl %s' % sh_dst)
+    os.system('powershell Copy-Item spher_harm/sh.osl -Destination %s' % sh_dst)
 
     genders = {0: 'female', 1: 'male'}
     # pick random gender
@@ -527,8 +529,13 @@ def main():
 
     # grab clothing names
     log_message("clothing: %s" % clothing_option)
+    tmp = join(smpl_data_folder, 'textures', '%s_%s.txt' % ( gender, idx_info['use_split'] ) )
     with open( join(smpl_data_folder, 'textures', '%s_%s.txt' % ( gender, idx_info['use_split'] ) ) ) as f:
         txt_paths = f.read().splitlines()
+
+    for i in range(len(txt_paths)):
+        a1, a2, a3 = txt_paths[i].split('/')
+        txt_paths[i] = join(a1, a2, a3)
 
     # if using only one source of clothing
     if clothing_option == 'nongrey':
@@ -542,11 +549,13 @@ def main():
     cloth_img = bpy.data.images.load(cloth_img_name)
 
     # random background
-    bg_img_name = choice(nh_txt_paths)[:-1]
+    bg_img_name = choice(nh_txt_paths)
+    if bg_img_name[-1] == '\n':
+        bg_img_name = bg_img_name[:-1]
     bg_img = bpy.data.images.load(bg_img_name)
 
     log_message("Loading parts segmentation")
-    beta_stds = np.load(join(smpl_data_folder, ('%s_beta_stds.npy' % gender)))
+    beta_stds = np.loadtxt(join(smpl_data_folder, ('%s_beta_stds.txt' % gender)))
     
     log_message("Building materials tree")
     mat_tree = bpy.data.materials['Material'].node_tree
@@ -742,7 +751,7 @@ def main():
         log_message("Rendering frame %d" % seq_frame)
         
         # disable render output
-        logfile = '/dev/null'
+        logfile = 'nul'
         open(logfile, 'a').close()
         old = os.dup(1)
         sys.stdout.flush()
